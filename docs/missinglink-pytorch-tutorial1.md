@@ -17,10 +17,10 @@ If you don't have it installed already, you can follow [this guide](https://pack
 
 ## First Thing’s First
 
-Let’s head to the MissingLink Keras Tutorial 1 [Github repository](https://github.com/missinglinkai/missinglink-keras-tutorial1), and examine it. Notice it contains the program file, `mnist_cnn.py`, and a `requirements.txt` file. This code trains a simple convnet on the MNIST dataset (borrowed from [Keras examples](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py)).  
+Let’s head to the MissingLink PyTorch Tutorial 1 [Github repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1), and examine it. Notice it contains the program file, `mnist_cnn.py`, and a `requirements.txt` file. This code trains a simple convnet on the MNIST dataset (borrowed from [PyTorch examples](https://github.com/pytorch/examples/tree/master/mnist)).  
 
 In order for us to make changes, we will need to create a copy of the repo and fetch it to your local development environment.  
-Please go ahead and create a fork of the [tutorial repository](https://github.com/missinglinkai/missinglink-keras-tutorial1), by clicking on the fork button.
+Please go ahead and create a fork of the [tutorial repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1), by clicking on the fork button.
 
 ![Fork on Github](../images/fork_repo.png)
 
@@ -37,7 +37,7 @@ Now copy the url for cloning the repository:
 Next, let’s open our terminal and git clone using the pasted url of your forked repository:  
 
 ```bash
-$ git clone git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-keras-tutorial1.git
+$ git clone git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git
 ```
 
 Now that the code is on your machine, let's prepare our environment:
@@ -58,7 +58,7 @@ $ python mnist_cnn.py
 
 ![Experiment progress in terminal](../images/tutorials-experiment-start.gif)
 
-As you can see, the code runs the experiment in 12 epochs.
+As you can see, the code runs the experiment in 10 epochs.
 
 # Integrating the MissingLink SDK
 
@@ -246,7 +246,7 @@ Now for some magic; We'll need to run a command for launching the local server u
 Let's run the following in our terminal:
 
 ```bash
-$ ml run local --git-repo git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-keras-tutorial1.git --command "python mnist_cnn.py"
+$ ml run local --git-repo git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git --command "python mnist_cnn.py"
 ```
 
 This command would take the code you've committed to your forked repository, clone it to your local server, install the requirements and run `python mnist_cnn.py`.
