@@ -106,8 +106,8 @@ Let's go ahead and open the code in your favorite IDE.
 We need to add the MissingLink SDK as a requirement under `requirements.txt` file:
 
 ```diff
-tensorflow
-keras
+torch
+torchvision
 +missinglink
 ```
 
@@ -122,51 +122,61 @@ $ pip install -r requirements.txt
 Open the `mnist_cnn.py` script file and import the MissingLink SDK:
 ```diff
 // ...
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras import backend as K
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
 +import missinglink
 
-batch_size = 128
-num_classes = 10
-epochs = 12
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
 // ...
 ```
 
-Now we need to initialize a callback object that we could have Keras call during the different stages of the experiment.
+Now we need to initialize the MissingLink project so that we could have PyTorch call our server during the different stages of the experiment.
 
 <!--- TODO: Make sure it works without user id and project id / token) --->
 
 ```diff
 // ...
-from keras.layers import Conv2D, MaxPooling2D
-from keras import backend as K
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
 import missinglink
 +
-+missinglink_callback = missinglink.KerasCallback()
++missinglink_project = missinglink.PyTorchProject()
  
-batch_size = 128
-num_classes = 10
-epochs = 12
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
 // ...
 ```
 
-Finally let's have Keras use our callback object. We want to add calls during fitting and test stages.  
-Let's scroll all the way to the bottom of the file and add the MissingLink callback to the `fit()` function call:
+Finally let's have PyTorch use our project. We want to add calls during fitting and test stages.  
+Let's scroll all the way to the bottom of the file and wrap the epoch loop with a MissingLink experiment:
 
 ```diff
 // ...
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_test, y_test),
-+         callbacks=[missinglink_callback])
+model = Net().to(device)
+optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
-score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
-// ...
+-    for epoch in range(1, args.epochs + 1):
+-        train(args, model, device, train_loader, optimizer, epoch)
+-        test(args, model, device, test_loader)
++    with missinglink_project.create_experiment(
++        model,
++        optimizer=optimizer,
++        train_data_object=train_loader,
++        metrics={'Loss': F.nll_loss}
++    ) as experiment:
++        wrapped_loss = experiment.metrics['Loss']
++
++        for epoch in experiment.epoch_loop(args.epochs):
++            train(args, model, device, train_loader, optimizer, epoch)
++            test(args, model, device, test_loader)
+
+if __name__ == '__main__':
+    main()
 ```
 
 Lastly, we want to let the MissingLink SDK know we're starting the testing stage:
