@@ -117,7 +117,7 @@ Now let's install the new requirements:
 $ pip install -r requirements.txt
 ```
 
-## Adding a callback to Keras
+## Create the experiment in MissingLink
 
 Open the `mnist_cnn.py` script file and import the MissingLink SDK:
 ```diff
