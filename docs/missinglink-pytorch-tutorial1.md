@@ -106,7 +106,7 @@ Let's go ahead and open the code in your favorite IDE.
 We need to add the MissingLink SDK as a requirement under `requirements.txt` file:
 
 ```diff
-torch
+torch==0.3.1
 torchvision
 +missinglink
 ```
@@ -122,14 +122,13 @@ $ pip install -r requirements.txt
 Open the `mnist_cnn.py` script file and import the MissingLink SDK:
 ```diff
 // ...
-import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
+from torch.autograd import Variable
 +import missinglink
 
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
+# Training settings
+parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 // ...
 ```
 
@@ -139,64 +138,88 @@ Now we need to initialize the MissingLink project so that we could have PyTorch 
 
 ```diff
 // ...
-import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
+from torch.autograd import Variable
 import missinglink
 +
 +missinglink_project = missinglink.PyTorchProject()
  
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
+# Training settings
+parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 // ...
 ```
 
-Finally let's have PyTorch use our project. We want to add calls during fitting and test stages.  
+Now let's have PyTorch use our project. We would need to inject calls to MissingLink during the training and testing stages.  
 Let's scroll all the way to the bottom of the file and wrap the epoch loop with a MissingLink experiment:
 
 ```diff
 // ...
-model = Net().to(device)
-optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        test_loss, correct, len(test_loader.dataset),
+        100. * correct / len(test_loader.dataset)))
 
--    for epoch in range(1, args.epochs + 1):
--        train(args, model, device, train_loader, optimizer, epoch)
--        test(args, model, device, test_loader)
-+    with missinglink_project.create_experiment(
-+        model,
-+        optimizer=optimizer,
-+        train_data_object=train_loader,
-+        metrics={'Loss': F.nll_loss}
-+    ) as experiment:
-+        wrapped_loss = experiment.metrics['Loss']
+-for epoch in range(1, args.epochs + 1):
+-    train(epoch)
+-    test()
++with missinglink_project.create_experiment(
++    model,
++    optimizer=optimizer,
++    train_data_object=train_loader,
++    metrics={'Loss': F.nll_loss}
++) as experiment:
++    wrapped_loss = experiment.metrics['Loss']
 +
-+        for epoch in experiment.epoch_loop(args.epochs):
-+            train(args, model, device, train_loader, optimizer, epoch)
-+            test(args, model, device, test_loader)
-
-if __name__ == '__main__':
-    main()
++    for epoch in experiment.epoch_loop(args.epochs):
++        train(epoch)
++        test()
 ```
 
-Lastly, we want to let the MissingLink SDK know we're starting the testing stage:
+Notice we are creating an experiment, defininig the Loss function and wrapping it with a function.
+Now we will need to use the experiment and the loss function wrapper within the training and testing functions.
+Scroll to the `train()` function and change the following lines:
 
 ```diff
-// ...
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_test, y_test),
-          callbacks=[missinglink_callback])
+def train(epoch):
+    model.train()
+-    for batch_idx, (data, target) in enumerate(train_loader):
++    for batch_idx, (data, target) in experiment.batch_loop(iterable=train_loader):
+        if args.cuda:
+            data, target = data.cuda(), target.cuda()
+        data, target = Variable(data), Variable(target)
+        optimizer.zero_grad()
+        output = model(data)
+-        loss = F.nll_loss(output, target)
++        loss = wrapped_loss(output, target)
+        loss.backward()
+        optimizer.step()
+        if batch_idx % args.log_interval == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), loss.data[0]))
+```
 
--score = model.evaluate(x_test, y_test, verbose=0)
-+with missinglink_callback.test(model):
-+    score = model.evaluate(x_test, y_test, verbose=0)
-+
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
-// ...
+Lastly, we want to let the MissingLink SDK know we're starting the testing stage. Let's head to the `train()` function and make the following change:
+
+```diff
+def test():
+    model.eval()
+    test_loss = 0
+    correct = 0
++    with experiment.test(test_data_object=test_loader):
+        for data, target in test_loader:
+            if args.cuda:
+                data, target = data.cuda(), target.cuda()
+            data, target = Variable(data, volatile=True), Variable(target)
+            output = model(data)
+            test_loss += F.nll_loss(output, target, size_average=False).data[0] # sum up batch loss
+            pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+            correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+
+        test_loss /= len(test_loader.dataset)
+        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset)))
 ```
 
 ## Run the Integrated Experiment
