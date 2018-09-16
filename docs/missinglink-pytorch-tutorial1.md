@@ -2,7 +2,7 @@
 
 In this tutorial we will take the existing implementation of a deep learning algorithm and integrate it into the MissingLink system. 
 
-We start with a [code sample](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py) that trains a model that is based on the MNIST dataset using a convolutional neural network, add the MissingLink SDK and eventually run the experiment in a MissingLink controlled emulated server.
+We start with a [code sample](https://github.com/pytorch/examples/tree/master/mnist) that trains a model that is based on the MNIST dataset using a convolutional neural network, add the MissingLink SDK and eventually run the experiment in a MissingLink controlled emulated server.
 
 # Getting Started
 
