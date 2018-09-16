@@ -1,46 +1,50 @@
-# Intro
+# Introduction
 
-In this tutorial we will take an existing implementation of a deep learning algorithm and integrate it into the MissingLink system. We will take a code sample training on the MNIST dataset using a convolutional neural network, add the MissingLink SDK and eventually run the experiment in a MissingLink controlled emulated server.
+In this tutorial we will take the existing implementation of a deep learning algorithm and integrate it into the MissingLink system. 
+
+We start with a [code sample](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py) that trains a model that is based on the MNIST dataset using a convolutional neural network, add the MissingLink SDK and eventually run the experiment in a MissingLink controlled emulated server.
 
 # Getting Started
 
 ## Prerequisites
 
-To run this tutorial you will need a MissingLink account. If don't already have one, please [head to the MissingLink website and sign up](https://missinglink.ai/console/signup/userdetails).
+To run this tutorial you will need a MissingLink account. If you don't have one, please [head to the MissingLink website and sign up](https://missinglink.ai/console/signup/userdetails).
 
 ---
-**NOTE**  
-This tutorial is assuming you’re using virtualenv to scope your working environment.
-If you don't have it installed already, you can follow [this guide](https://packaging.python.org/guides/installing-using-pip-and-virtualenv/).
+**NOTE**
+
+This tutorial assumes you’re using virtualenv to scope your working environment.
+If you don't have it installed, you can follow [this guide](https://packaging.python.org/guides/installing-using-pip-and-virtualenv/) to get it set up.
 
 ---
 
-## First Thing’s First
+## First things first ...
 
-Let’s head to the MissingLink PyTorch Tutorial 1 [Github repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1), and examine it. Notice it contains the program file, `mnist_cnn.py`, and a `requirements.txt` file. This code trains a simple convnet on the MNIST dataset (borrowed from [PyTorch examples](https://github.com/pytorch/examples/tree/master/mnist)).  
+Let’s head to the MissingLink PyTorch Tutorial 1 [Github repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1), and examine it.
 
-In order for us to make changes, we will need to create a copy of the repo and fetch it to your local development environment.  
-Please go ahead and create a fork of the [tutorial repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1), by clicking on the fork button.
+Notice it contains the program file, `mnist_cnn.py`, and a `requirements.txt` file. This code trains a simple convnet on the MNIST dataset (borrowed from [PyTorch examples](https://github.com/pytorch/examples/tree/master/mnist)).  
+
+To make changes, you will need to create a copy of the repo and fetch it to your local development environment. Please go ahead and create a fork of the [tutorial repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1) by clicking the fork button.
 
 ![Fork on Github](../images/fork_repo.png)
 
 <!--- TODO: take another screenshot when we make the repo public --->
 
-After the forked repository was created, we will need to clone it locally in our workstation. Click the clone button in Github:
+After the forked repository is created, clone it locally in your workstation. Click the clone button in Github:
 
 ![Fork on Github](../images/clone_button.png)
 
-Now copy the url for cloning the repository:
+Now copy the URL for cloning the repository:
 
 ![Copy repo url](../images/copy_repo_url_button.png)
 
-Next, let’s open our terminal and git clone using the pasted url of your forked repository:  
+Next, let’s open a terminal and `git clone` using the pasted URL of your forked repository:  
 
 ```bash
 $ git clone git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git
 ```
 
-Now that the code is on your machine, let's prepare our environment:
+Now that the code is on your machine, let's prepare the environment. Run the following commands:
 
 ```bash
 $ python3 -m virtualenv env
@@ -48,7 +52,7 @@ $ source env/bin/activate
 $ pip install -r requirements.txt
 ```
 
-## Let's Run It
+## Let's run it
 
 You can try to run the example:
 
@@ -62,23 +66,27 @@ As you can see, the code runs the experiment in 10 epochs.
 
 # Integrating the MissingLink SDK
 
-Now, let's see how by adding a few lines of code and a few commands, we're able to follow our experiment in MissingLinks web dashboard.
+Now, let's see how, by adding a few lines of code and a few commands, we're able to follow the experiment in MissingLink's web dashboard.
 
-## Install and init the MissingLink CLI
+## Install and initialize the MissingLink CLI
 
-MissingLink provides a CLI (command line interface) which allows you to control everything from the terminal.
+MissingLink provides a command line interface (CLI) that allows you to control everything from the terminal.
+
 Let's go ahead and install it:
 
 ```bash
 $ pip install MissingLink
 ```
 
-Next we want to authenticate with the MissingLink backend.
+Next, authenticate with the MissingLink backend.
 
 ---
-**NOTE**  
+**NOTE**
+
 Once you run the following command, a browser window will launch and navigate to the MissingLink website.
-If you're not logged in, you will be asked to login. When the process is completed, you will get a message to go back to the console.
+
+If you're not logged in, you will be asked to log on. When the process is completed, you will get a message to go back to the terminal.
+
 
 ---
 
@@ -95,15 +103,16 @@ $ ml projects create --display-name tutorials
 ```
 
 ---
-**NOTE**  
-You can see a list of all your projects by running `ml projects list`, or obviously by going to the [MissingLink web console](https://missinglink.ai/console).
+**NOTE**
+
+You can see a list of all your projects by running `ml projects list`, or obviously, by going to the [MissingLink web dashboard](https://missinglink.ai/console).
 
 ---
 
 ## Updating the requirements
 
-Let's go ahead and open the code in your favorite IDE.
-We need to add the MissingLink SDK as a requirement under `requirements.txt` file:
+Go ahead and open the code in your favorite IDE.
+Add the MissingLink SDK as a requirement under the `requirements.txt` file:
 
 ```diff
 torch==0.3.1
@@ -111,7 +120,7 @@ torchvision
 +missinglink
 ```
 
-Now let's install the new requirements:
+Now install the new requirements:
 
 ```bash
 $ pip install -r requirements.txt
@@ -199,7 +208,7 @@ def train(epoch):
                 100. * batch_idx / len(train_loader), loss.data[0]))
 ```
 
-Lastly, we want to let the MissingLink SDK know we're starting the testing stage. Let's head to the `train()` function and make the following change:
+Lastly, let the MissingLink SDK know we're starting the testing stage. Let's head to the `train()` function and make the following change:
 
 ```diff
 def test():
@@ -222,36 +231,37 @@ def test():
             100. * correct / len(test_loader.dataset)))
 ```
 
-## Run the Integrated Experiment
-We're now all set up to run the experiment again, but this time to see it in the Missing Link dashboard.  
+## Run the integrated experiment
+We're all set up to run the experiment again, but this time to see it in the Missing Link dashboard.  
 
-Let's go back to the terminal and run our script again:
+Go back to the terminal and run the script again:
 
 ```bash
 $ python mnist_cnn.py
 ```
 
-You should see the initialization and the beginning of training. Now, let's switch back to the MissingLink dashboard.
+You should see the initialization and the beginning of training. Now, switch back to the MissingLink dashboard.
 
-Open the [MissingLink console](https://missinglink.ai/console) and click on the projects toolbar button on the left. On this page you should see the list of experiments which belong to your project.
+Open the [MissingLink dashboard](https://missinglink.ai/console) and click the projects toolbar button on the left. In this page, you should see the list of experiments that belong to your project.
 
 ![List of projects](../images/project_list_tutorials_project.png)
 
-Choose the `tutorials` project, you will see your experiment appear.  
+Choose the `tutorials` project. Your experiment appears.  
 
-![Experiment in list](../images/tutorials_experiment.png)
+![Experiment in list](../images/tutorial_experiment.png)
 
-Now you can click anywhere on the experiment line to show more info about the experiment's progress.
+Now you can click anywhere on the experiment line to show more information about the experiment's progress.
 
 ![Experiment detailed view](../images/tutorials_experiment_info.png)
 
 ---
-**NOTE**  
-Feel free to browse through the table and the different tabs of the experiment you're running, and see how the metrics update as the experiment progresses. This tutorial does not include an explanation about these screens. For a detailed walkthrough, click here.
+**NOTE**
+
+Feel free to browse through the table and the different tabs of the experiment you're running, and see how the metrics update as the experiment progresses. This tutorial does not include an explanation about these screens. 
 
 ---
 
-## Commit the Code Changes
+## Commit the code changes
 
 Let's commit our code to the repo. Go to your terminal and run the following commands:
 
@@ -263,48 +273,58 @@ $ git push
 
 # Adding Resource Management
 
-Now that we have everything working so nicely on our local workstation, we would like to take the integration to the next level. MissingLink can help you manage your servers so that you don't have to worry about it.
-
+Now that we have everything working on our local workstation, let's take the integration to the next level. 
 <!--- TODO: Link to a good RM explanation --->
 
-The next step for us would be to run the experiment on a managed server. For the sake of simplicity, we will not connect real GPU servers in this tutorial, but rather emulate a real server on our local workstation. But it should definitely give you a sense of how it would work when running on real servers.
+<!--- Moshe: which page can we link to in RM docs? --->
 
-## The Missing Step
+The next step for us would be to run the experiment on a managed server. 
+MissingLink can help you manage your servers, so that you don't have to worry about it.
 
-The most important step for setting up resource management in your project would be to give us access to your training machines. For that you will basically need to install missinglink on your existing machines, or give us limited access to your cloud hosting account so we can spin up machines for you. As mentioned above, we will not do this step in this tutorial.
+For the sake of simplicity, we will not connect real GPU servers in this tutorial, but rather emulate a real server on our local workstation. This all should definitely give you a sense of how it would work when running on real servers.
+
+## The missing step
+
+The most important step for setting up Resource Management in your project would be to give us access to your training machines. To enable access, you will  need to install MissingLink on your existing machines, or give us limited access to your cloud hosting account so we can spin up machines for you. As mentioned above, we will not perform this step in this tutorial.
 
 ## Let's emulate
 
-Now for some magic; We'll need to run a command for launching the local server using the MissingLink CLI.
-Let's run the following in our terminal:
+Now for some magic.
+
+We'll need to run a command for launching the local server using the MissingLink CLI. Run the following in your terminal:
 
 ```bash
 $ ml run local --git-repo git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git --command "python mnist_cnn.py"
 ```
 
-This command would take the code you've committed to your forked repository, clone it to your local server, install the requirements and run `python mnist_cnn.py`.
+This command takes the code you've committed to your forked repository, clones it to your local server, installs the requirements, and runs `python mnist_cnn.py`.
 
 ---
-**NOTE**  
+**NOTE**
+
 The command for running the same thing on a real server is very similar.
 
 ---
 
 ## Observe the progress
 
-If everything goes well, we can now observe the progress of our experiment, running on a managed server, right in the dashboard.  
-Go to https://missinglink.ai/console and click on the Resource Groups toolbar button on the left. You should see a newly created resource group representing our local emulated server.
+If everything goes well, we can now observe the progress of our experiment, running on a managed server, right in the dashboard.
+
+Go to https://missinglink.ai/console and click the Resource Groups toolbar button on the left. You should see a newly created resource group representing our local emulated server.
 
 <!--- TODO: Add a screenshot of the resource group --->
 
 ---
-**NOTE**  
-This resource group is temporary and would disappear from the list once the job we're running is completed.
+**NOTE**
+  
+This resource group is temporary and will disappear from the list once the job we're running is completed.
 
 ---
 
-Click on the line showing the emulated server - you would be navigated to see the logs of the task running in our local server.
+Click on the line showing the emulated server. You are taken to a view of the logs of the task running in our local server.
 
 <!--- TODO: Add a gif showing the progress of the logs --->
 
-Let's go see the actual progress of our experiment. Click on the projects toolbar button on the left and choose the `tutorials` project. You should see the new experiment's progress.
+Let's see the actual progress of our experiment. Click the projects toolbar button on the left and choose the `tutorials` project. You should see the new experiment's progress.
+
+<!--- Moshe: Screenshots have the name Elad Shaham. OK? --->
