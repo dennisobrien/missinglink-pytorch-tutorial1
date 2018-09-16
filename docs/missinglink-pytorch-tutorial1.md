@@ -28,8 +28,6 @@ To make changes, you will need to create a copy of the repo and fetch it to your
 
 ![Fork on Github](../images/fork_repo.png)
 
-<!--- TODO: take another screenshot when we make the repo public --->
-
 After the forked repository is created, clone it locally in your workstation. Click the clone button in Github:
 
 ![Fork on Github](../images/clone_button.png)
