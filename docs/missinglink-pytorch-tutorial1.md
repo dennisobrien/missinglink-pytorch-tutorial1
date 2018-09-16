@@ -182,15 +182,15 @@ Scroll to the `train()` function and change the following lines:
 ```diff
 def train(epoch):
     model.train()
--    for batch_idx, (data, target) in enumerate(train_loader):
-+    for batch_idx, (data, target) in experiment.batch_loop(iterable=train_loader):
+-   for batch_idx, (data, target) in enumerate(train_loader):
++   for batch_idx, (data, target) in experiment.batch_loop(iterable=train_loader):
         if args.cuda:
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
         output = model(data)
--        loss = F.nll_loss(output, target)
-+        loss = wrapped_loss(output, target)
+-       loss = F.nll_loss(output, target)
++       loss = wrapped_loss(output, target)
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
@@ -206,7 +206,7 @@ def test():
     model.eval()
     test_loss = 0
     correct = 0
-+    with experiment.test(test_data_object=test_loader):
++   with experiment.test(test_data_object=test_loader):
         for data, target in test_loader:
             if args.cuda:
                 data, target = data.cuda(), target.cuda()
