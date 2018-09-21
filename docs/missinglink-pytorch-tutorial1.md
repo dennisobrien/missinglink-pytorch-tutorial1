@@ -182,7 +182,7 @@ Let's scroll all the way to the bottom of the file and wrap the epoch loop with 
 +        test()
 ```
 
-Notice we are creating an experiment, defininig the Loss function and wrapping it with a function.
+Notice we are creating an experiment, defining the Loss function and wrapping it with a MissingLink experiment function.
 Now we will need to use the experiment and the loss function wrapper within the training and testing functions.
 Scroll to the `train()` function and change the following lines:
 
