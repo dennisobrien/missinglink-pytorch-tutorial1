@@ -139,7 +139,7 @@ parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 // ...
 ```
 
-Now we need to initialize the MissingLink project so that we can have PyTorch call our server during the different stages of the experiment.
+Now we need to initialize the MissingLink project so that we can have PyTorch call the MissingLink server during the different stages of the experiment.
 
 <!--- TODO: Make sure it works without user id and project id / token) --->
 
