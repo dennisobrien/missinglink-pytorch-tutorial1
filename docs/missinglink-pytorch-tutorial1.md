@@ -279,7 +279,7 @@ Now that we have everything working on our local workstation, let's take the int
 The next step for us would be to run the experiment on a managed server. 
 MissingLink can help you manage your servers, so that you don't have to worry about it.
 
-For the sake of simplicity, we will not connect real GPU servers in this tutorial, but rather emulate a real server on our local workstation. This all should definitely give you a sense of how it would work when running on real servers.
+For the sake of simplicity, we will not connect real GPU servers in this tutorial, but rather emulate a real server on our local workstation. This should definitely give you a sense of how it would work when running on real servers.
 
 ## The missing step
 
@@ -287,15 +287,40 @@ The most important step for setting up Resource Management in your project would
 
 ## Let's emulate
 
+For this step we will need to take a note of the name of our organization in the MissingLink system, and the ID of the `tutorials` project. Run the following command in the terminal:
+
+```bash
+$ ml projects list
+```
+
+You should get a list of all the projects you have access to. Look for the `tutorials` project:
+
+```bash
+project_id   | display_name | description | token        | org
+<PROJECT_ID>   tutorials                    <SOME_TOKEN>   <YOUR_ORG>
+```
+
+Take a note of the project ID of the `tutorials` project, as well as the name of the organization this project belongs to.
+
 Now for some magic.
 
 We'll need to run a command for launching the local server using the MissingLink CLI. Run the following in your terminal:
 
+<!--- TODO: Remove params when possible  --->
+
 ```bash
-$ ml run local --git-repo git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git --command "python mnist_cnn.py"
+$ ml run local --org <ORG_NAME> --project <PROJECT_ID> --git-repo git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git --cpu --image tensorflow/tensorflow:1.9.0-devel --command "python mnist_cnn.py"
 ```
 
-This command takes the code you've committed to your forked repository, clones it to your local server, installs the requirements, and runs `python mnist_cnn.py`.
+This command takes the code you've committed to your forked repository, clones it to your local server, installs the requirements, and runs the expriment.  
+Let's go over and explain all the options in the previous command:
+
+`--org`: The name of the organization, taken from the previous step  
+`--project`: The id of the project, taken from the previous step  
+`--git-repo`: A git url that should be cloned to the server  
+`--cpu`: Use the on your workstation. If your workstation has a supported GPU, you can specify `--gpu` instead  
+`--image`: The docker image to use. If your workstation has a supported GPU, you can skip this parameter to use the default docker image
+`--command`: The command to run (from the root of your source code)
 
 ---
 **NOTE**
@@ -308,9 +333,9 @@ The command for running the same thing on a real server is very similar.
 
 If everything goes well, we can now observe the progress of our experiment, running on a managed server, right in the dashboard.
 
-Go to https://missinglink.ai/console and click the Resource Groups toolbar button on the left. You should see a newly created resource group representing our local emulated server.
+Go to https://missinglink.ai/console and click the Resource Groups toolbar button on the left. You should see a newly created resource group representing our local emulated server. If you don't see it yet, the MissingLink CLI is still preparing it.
 
-<!--- TODO: Add a screenshot of the resource group --->
+![Local resource group](../images/local_resource_group.png)
 
 ---
 **NOTE**
@@ -319,10 +344,18 @@ This resource group is temporary and will disappear from the list once the job w
 
 ---
 
-Click on the line showing the emulated server. You are taken to a view of the logs of the task running in our local server.
+If you click the Jobs toolbar button on the left, you should see a newly created job.
 
-<!--- TODO: Add a gif showing the progress of the logs --->
+![Job in jobs list](../images/jobs_list.png)
+
+Click on the line showing the job. You are taken to a view of the logs of the task running in our local server.
+
+![Job logs](../images/job_logs.png)
 
 Let's see the actual progress of our experiment. Click the projects toolbar button on the left and choose the `tutorials` project. You should see the new experiment's progress.
 
-<!--- Moshe: Screenshots have the name Elad Shaham. OK? --->
+# Summary
+
+This tutorial demonstrated how you take an existing deep learning code sample, integrate the MissingLink SDK, and run it on an emulated local server.  
+
+To learn more about what you can do with MissingLink, please head to the [docs section](https://missinglink.ai/docs) on the MissingLink website.
