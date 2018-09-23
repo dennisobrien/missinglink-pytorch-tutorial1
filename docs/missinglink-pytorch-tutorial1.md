@@ -10,6 +10,8 @@ We start with a [code sample](https://github.com/pytorch/examples/tree/master/mn
 
 To run this tutorial you will need a MissingLink account. If you don't have one, please [head to the MissingLink website and sign up](https://missinglink.ai/console/signup/userdetails).
 
+You will also need to have [Python](https://www.python.org/downloads/) and [Docker](https://docs.docker.com/install/#supported-platforms) installed on your workstation.
+
 ---
 **NOTE**
 
@@ -40,6 +42,7 @@ Next, let’s open a terminal and `git clone` using the pasted URL of your forke
 
 ```bash
 $ git clone git@github.com:<YOUR_GITHUB_USERNAME>/missinglink-pytorch-tutorial1.git
+$ cd missinglink-pytorch-tutorial1
 ```
 
 Now that the code is on your machine, let's prepare the environment. Run the following commands:
@@ -73,7 +76,7 @@ MissingLink provides a command line interface (CLI) that allows you to control e
 Let's go ahead and install it:
 
 ```bash
-$ pip install MissingLink
+$ pip install missinglink
 ```
 
 Next, authenticate with the MissingLink backend.
@@ -118,12 +121,6 @@ torchvision
 +missinglink
 ```
 
-Now install the new requirements:
-
-```bash
-$ pip install -r requirements.txt
-```
-
 ## Create the experiment in MissingLink
 
 Open the `mnist_cnn.py` script file and import the MissingLink SDK:
@@ -140,8 +137,6 @@ parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 ```
 
 Now we need to initialize the MissingLink project so that we can have PyTorch call the MissingLink server during the different stages of the experiment.
-
-<!--- TODO: Make sure it works without user id and project id / token) --->
 
 ```diff
 // ...
@@ -272,9 +267,6 @@ $ git push
 # Adding Resource Management
 
 Now that we have everything working on our local workstation, let's take the integration to the next level. 
-<!--- TODO: Link to a good RM explanation --->
-
-<!--- Moshe: which page can we link to in RM docs? --->
 
 The next step for us would be to run the experiment on a managed server. 
 MissingLink can help you manage your servers, so that you don't have to worry about it.
