@@ -2,13 +2,13 @@
 
 In this tutorial we will take the existing implementation of a deep learning algorithm and integrate it into the MissingLink system. 
 
-We start with a [code sample](https://github.com/pytorch/examples/tree/master/mnist) that trains a model that is based on the MNIST dataset using a convolutional neural network, add the MissingLink SDK and eventually run the experiment in a MissingLink controlled emulated server.
+We start with a [code sample](https://github.com/pytorch/examples/tree/master/mnist) that trains a model based on the MNIST dataset using a convolutional neural network, add the MissingLink SDK, and eventually run the experiment in a MissingLink controlled emulated server.
 
 # Getting Started
 
 ## Prerequisites
 
-To run this tutorial you will need a MissingLink account. If you don't have one, please [head to the MissingLink website and sign up](https://missinglink.ai/console/signup/userdetails).
+To run this tutorial, you will need a MissingLink account. If you don't have one, [head to the MissingLink website and sign up](https://missinglink.ai/console/signup/userdetails).
 
 You will also need to have [Python](https://www.python.org/downloads/) and [Docker](https://docs.docker.com/install/#supported-platforms) installed on your workstation.
 
@@ -22,15 +22,15 @@ If you don't have it installed, you can follow [this guide](https://packaging.py
 
 ## First things first ...
 
-Let’s head to the MissingLink PyTorch Tutorial 1 [Github repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1), and examine it.
+Let’s head to the MissingLink PyTorch Tutorial 1 [Github repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1) and examine it.
 
 Notice it contains the program file, `mnist_cnn.py`, and a `requirements.txt` file. This code trains a simple convnet on the MNIST dataset (borrowed from [PyTorch examples](https://github.com/pytorch/examples/tree/master/mnist)).  
 
-To make changes, you will need to create a copy of the repo and fetch it to your local development environment. Please go ahead and create a fork of the [tutorial repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1) by clicking the fork button.
+To make changes, you will need to create a copy of the repo and fetch it to your local development environment. Go ahead and create a fork of the [tutorial repository](https://github.com/missinglinkai/missinglink-pytorch-tutorial1) by clicking Fork.
 
 ![Fork on Github](../images/fork_repo.png)
 
-After the forked repository is created, clone it locally in your workstation. Click the clone button in Github:
+After the forked repository is created, clone it locally in your workstation. Click Clone or download in Github:
 
 ![Fork on Github](../images/clone_button.png)
 
@@ -84,9 +84,9 @@ Next, authenticate with the MissingLink backend.
 ---
 **NOTE**
 
-Once you run the following command, a browser window will launch and navigate to the MissingLink website.
+Once you run the following command, a browser window launches and accesses the MissingLink website.
 
-If you're not logged in, you will be asked to log on. When the process is completed, you will get a message to go back to the terminal.
+If you're not logged on, you will be asked to log on. When the process is completed, you will get a message to go back to the terminal.
 
 
 ---
@@ -112,8 +112,8 @@ You can see a list of all your projects by running `ml projects list`, or obviou
 
 ## Updating the requirements
 
-Go ahead and open the code in your favorite IDE.
-Add the MissingLink SDK as a requirement under the `requirements.txt` file:
+Open the code in your favorite IDE.
+Add the MissingLink SDK as a requirement in the `requirements.txt` file:
 
 ```diff
 torch==0.3.1
@@ -239,7 +239,7 @@ Open the [MissingLink dashboard](https://missinglink.ai/console) and click the p
 
 ![List of projects](../images/project_list_tutorials_project.png)
 
-Choose the `tutorials` project. Your experiment appears.  
+Choose the **tutorials** project. Your experiment appears.  
 
 ![Experiment in list](../images/tutorial_experiment.png)
 
@@ -250,7 +250,7 @@ Now you can click anywhere on the experiment line to show more information about
 ---
 **NOTE**
 
-Feel free to browse through the table and the different tabs of the experiment you're running, and see how the metrics update as the experiment progresses. This tutorial does not include an explanation about these screens. 
+Feel free to browse through the different tabs of the experiment you're running and see how the metrics update as the experiment progresses. This tutorial does not include an explanation about these screens. 
 
 ---
 
@@ -268,35 +268,35 @@ $ git push
 
 Now that we have everything working on our local workstation, let's take the integration to the next level. 
 
-The next step for us would be to run the experiment on a managed server. 
+The next step is to run the experiment on a managed server. 
 MissingLink can help you manage your servers, so that you don't have to worry about it.
 
 For the sake of simplicity, we will not connect real GPU servers in this tutorial, but rather emulate a real server on our local workstation. This should definitely give you a sense of how it would work when running on real servers.
 
 ## The missing step
 
-The most important step for setting up Resource Management in your project would be to give us access to your training machines. To enable access, you will  need to install MissingLink on your existing machines, or give us limited access to your cloud hosting account so we can spin up machines for you. As mentioned above, we will not perform this step in this tutorial.
+The most important step for setting up Resource Management in your project is to give us access to your training machines. To enable access, you will need to install MissingLink on your existing machines, or give us limited access to your cloud hosting account so we can spin up machines for you. As mentioned above, we will not perform this step in this tutorial.
 
 ## Let's emulate
 
-For this step we will need to take a note of the name of our organization in the MissingLink system, and the ID of the `tutorials` project. Run the following command in the terminal:
+For this step, take note of the name of our organization in the MissingLink system, and the ID of the **tutorials** project. Run the following command in the terminal:
 
 ```bash
 $ ml projects list
 ```
 
-You should get a list of all the projects you have access to. Look for the `tutorials` project:
+You should get a list of all the projects you have access to. Look for the **tutorials** project:
 
 ```bash
 project_id   | display_name | description | token        | org
 <PROJECT_ID>   tutorials                    <SOME_TOKEN>   <YOUR_ORG>
 ```
 
-Take a note of the project ID of the `tutorials` project, as well as the name of the organization this project belongs to.
+Take note of the project ID of the **tutorials** project, as well as the name of the organization this project belongs to.
 
 Now for some magic.
 
-We'll need to run a command for launching the local server using the MissingLink CLI. Run the following in your terminal:
+We'll run a command for launching the local server using the MissingLink CLI. Run the following in your terminal:
 
 <!--- TODO: Remove params when possible  --->
 
@@ -307,12 +307,12 @@ $ ml run local --org <ORG_NAME> --project <PROJECT_ID> --git-repo git@github.com
 This command takes the code you've committed to your forked repository, clones it to your local server, installs the requirements, and runs the expriment.  
 Let's go over and explain all the options in the previous command:
 
-`--org`: The name of the organization, taken from the previous step  
-`--project`: The id of the project, taken from the previous step  
-`--git-repo`: A git url that should be cloned to the server  
-`--cpu`: Use the on your workstation. If your workstation has a supported GPU, you can specify `--gpu` instead  
-`--image`: The docker image to use. If your workstation has a supported GPU, you can skip this parameter to use the default docker image
-`--command`: The command to run (from the root of your source code)
+`--org`: The name of the organization, taken from the previous step.  
+`--project`: The id of the project, taken from the previous step.  
+`--git-repo`: URL of a git that should be cloned to the server.  
+`--cpu`: Use the CPU on your workstation. If your workstation has a supported GPU, you can specify `--gpu` instead.  
+`--image`: The docker image to use. If your workstation has a supported GPU, you can skip this parameter to use the default docker image.
+`--command`: The command to run (from the root of your source code).
 
 ---
 **NOTE**
@@ -344,10 +344,10 @@ Click on the line showing the job. You are taken to a view of the logs of the ta
 
 ![Job logs](../images/job_logs.png)
 
-Let's see the actual progress of our experiment. Click the projects toolbar button on the left and choose the `tutorials` project. You should see the new experiment's progress.
+Let's see the actual progress of our experiment. Click the projects toolbar button on the left and choose the **tutorials** project. You should see the new experiment's progress.
 
 # Summary
 
 This tutorial demonstrated how you take an existing deep learning code sample, integrate the MissingLink SDK, and run it on an emulated local server.  
 
-To learn more about what you can do with MissingLink, please head to the [docs section](https://missinglink.ai/docs) on the MissingLink website.
+To learn more about what you can do with MissingLink, [head to the docs section](https://missinglink.ai/docs) on the MissingLink website.
