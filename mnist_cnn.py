@@ -6,6 +6,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.autograd import Variable
+import missinglink
+
+missinglink_project = missinglink.PyTorchProject()
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -75,13 +78,13 @@ optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
 def train(epoch):
     model.train()
-    for batch_idx, (data, target) in enumerate(train_loader):
+    for batch_idx, (data, target) in experiment.batch_loop(iterable=train_loader):
         if args.cuda:
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+        loss = wrapped_loss(output, target)
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
@@ -93,21 +96,31 @@ def test():
     model.eval()
     test_loss = 0
     correct = 0
-    for data, target in test_loader:
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
-        data, target = Variable(data, volatile=True), Variable(target)
-        output = model(data)
-        test_loss += F.nll_loss(output, target, size_average=False).data[0] # sum up batch loss
-        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-        correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+    with experiment.test(test_data_object=test_loader):
+        for data, target in test_loader:
+            if args.cuda:
+                data, target = data.cuda(), target.cuda()
+            data, target = Variable(data, volatile=True), Variable(target)
+            output = model(data)
+            test_loss += F.nll_loss(output, target, size_average=False).data[0] # sum up batch loss
+            pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+            correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
-    test_loss /= len(test_loader.dataset)
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset)))
+        test_loss /= len(test_loader.dataset)
+        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset)))
 
 
-for epoch in range(1, args.epochs + 1):
-    train(epoch)
-    test()
+with missinglink_project.create_experiment(
+    model,
+    display_name='MNIST PyTorch',
+    optimizer=optimizer,
+    train_data_object=train_loader,
+    metrics={'Loss': F.nll_loss}
+) as experiment:
+    wrapped_loss = experiment.metrics['Loss']
+
+    for epoch in experiment.epoch_loop(args.epochs):
+        train(epoch)
+        test()
